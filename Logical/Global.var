@@ -1,0 +1,8 @@
+VAR
+	gTestCounter : DINT;
+
+	gCmdStart : BOOL;
+	gCmdStop  : BOOL;
+	gCmdReset : BOOL;
+	gCmdHome  : BOOL;
+END_VAR

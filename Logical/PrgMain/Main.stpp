@@ -1,0 +1,157 @@
+PROGRAM _INIT
+	(* Insert code here *)
+END_PROGRAM
+PROGRAM _CYCLIC
+	// ------------------------------------------------------------
+	// Global Machine Start/Stop
+	// ------------------------------------------------------------
+	MachineSM.Enable := TRUE;
+	MachineSM.Homed := TRUE;
+	MachineSM.HomeOnReset := TRUE;
+	MachineSM.HomeRequest := gCmdHome;
+	MachineSM.Start := gCmdStart;
+	MachineSM.Stop  := gCmdStop;
+	MachineSM.Reset := gCmdReset;
+		
+	MachineSM.Execute();
+	
+
+	// ------------------------------------------------------------
+	// Edge detection
+	// ------------------------------------------------------------
+	ModuleStartPulse := MachineSM.Running AND NOT PrevMachineRunning;
+	ModuleStopPulse  := MachineSM.Stop;
+
+	PrevMachineRunning := MachineSM.Running;
+
+
+	// ------------------------------------------------------------
+	// Module A
+	// ------------------------------------------------------------
+	ModuleA_SM.Enable := TRUE;
+	ModuleA_SM.Homed := TRUE;
+	ModuleA_SM.HomeOnReset := TRUE;
+	ModuleA_SM.HomeRequest := gCmdHome;
+	ModuleA_SM.Start := ModuleStartPulse;
+	ModuleA_SM.Stop := ModuleStopPulse;
+	ModuleA_SM.Reset := MachineSM.Reset;
+	ModuleA_SM.Execute();
+
+
+	// ------------------------------------------------------------
+	// Module B
+	// ------------------------------------------------------------
+	ModuleB_SM.Enable := TRUE;
+	ModuleB_SM.Homed := TRUE;
+	ModuleB_SM.HomeRequest := gCmdHome;
+	ModuleB_SM.HomeOnReset := TRUE;
+	ModuleB_SM.Start := ModuleStartPulse;
+	ModuleB_SM.Stop := ModuleStopPulse;
+	ModuleB_SM.Reset := MachineSM.Reset;
+	ModuleB_SM.Execute();
+
+
+	// ------------------------------------------------------------
+	// Module C
+	// ------------------------------------------------------------
+	ModuleC_SM.Enable := TRUE;
+	ModuleC_SM.Homed := TRUE;
+	ModuleC_SM.HomeOnReset := TRUE;
+	ModuleC_SM.HomeRequest := gCmdHome;
+	ModuleC_SM.Start := ModuleStartPulse;
+	ModuleC_SM.Stop := ModuleStopPulse;
+	ModuleC_SM.Reset := MachineSM.Reset;
+	ModuleC_SM.Execute();
+
+
+	// ------------------------------------------------------------
+	// Module D
+	// ------------------------------------------------------------
+	ModuleD_SM.Enable := TRUE;
+	ModuleD_SM.Homed := TRUE;
+	ModuleD_SM.HomeOnReset := TRUE;
+	ModuleD_SM.HomeRequest := gCmdHome;
+	ModuleD_SM.Start := ModuleStartPulse;
+	ModuleD_SM.Stop := ModuleStopPulse;
+	ModuleD_SM.Reset := MachineSM.Reset;
+	ModuleD_SM.Execute();
+
+
+	// ------------------------------------------------------------
+	// Module E
+	// ------------------------------------------------------------
+	ModuleE_SM.Enable := TRUE;
+	ModuleE_SM.Homed := TRUE;
+	ModuleE_SM.HomeOnReset := TRUE;
+	ModuleE_SM.HomeRequest := gCmdHome;
+	ModuleE_SM.Start := ModuleStartPulse;
+	ModuleE_SM.Stop := ModuleStopPulse;
+	ModuleE_SM.Reset := MachineSM.Reset;
+	ModuleE_SM.Execute();
+
+
+	// ------------------------------------------------------------
+	// Module F
+	// ------------------------------------------------------------
+	ModuleF_SM.Enable := TRUE;
+	ModuleF_SM.Homed := TRUE;
+	ModuleF_SM.HomeOnReset := TRUE;
+	ModuleF_SM.HomeRequest := gCmdHome;
+	ModuleF_SM.Start := ModuleStartPulse;
+	ModuleF_SM.Stop := ModuleStopPulse;
+	ModuleF_SM.Reset := MachineSM.Reset;
+	ModuleF_SM.Execute();
+
+
+	// ------------------------------------------------------------
+	// Module G
+	// ------------------------------------------------------------
+	ModuleG_SM.Enable := TRUE;
+	ModuleG_SM.Homed := TRUE;
+	ModuleG_SM.HomeOnReset := TRUE;
+	ModuleG_SM.HomeRequest := gCmdHome;
+	ModuleG_SM.Start := ModuleStartPulse;
+	ModuleG_SM.Stop := ModuleStopPulse;
+	ModuleG_SM.Reset := MachineSM.Reset;
+	ModuleG_SM.Execute();
+	
+	// ------------------------------------------------------------
+	// Aggregate module status
+	// ------------------------------------------------------------
+	AllModulesRunning :=
+		ModuleA_SM.Running AND
+		ModuleB_SM.Running AND
+		ModuleC_SM.Running AND
+		ModuleD_SM.Running AND
+		ModuleE_SM.Running AND
+		ModuleF_SM.Running AND
+		ModuleG_SM.Running;
+
+	AllModulesIdle :=
+		(ModuleA_SM.StateOut = 10) AND
+		(ModuleB_SM.StateOut = 10) AND
+		(ModuleC_SM.StateOut = 10) AND
+		(ModuleD_SM.StateOut = 10) AND
+		(ModuleE_SM.StateOut = 10) AND
+		(ModuleF_SM.StateOut = 10) AND
+		(ModuleG_SM.StateOut = 10);
+
+	AnyModuleError :=
+		ModuleA_SM.Error OR
+		ModuleB_SM.Error OR
+		ModuleC_SM.Error OR
+		ModuleD_SM.Error OR
+		ModuleE_SM.Error OR
+		ModuleF_SM.Error OR
+		ModuleG_SM.Error;
+
+
+	// ------------------------------------------------------------
+	// Debug
+	// ------------------------------------------------------------
+	gTestCounter := gTestCounter+1;
+END_PROGRAM
+
+PROGRAM _EXIT
+	(* Insert code here *)
+END_PROGRAM

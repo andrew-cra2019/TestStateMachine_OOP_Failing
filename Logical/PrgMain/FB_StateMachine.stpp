@@ -1,0 +1,140 @@
+FUNCTION_BLOCK FB_StateMachine
+	METHOD PUBLIC Execute
+		
+		// ------------------------------------------------------
+		// State 0 - INIT / wait for reset-home request
+		// ------------------------------------------------------
+		IF State = STATE_INIT THEN
+			StepCounter := 0;
+			
+			IF Enable AND Reset THEN
+				IF HomeOnReset OR HomeRequest THEN
+					State := STATE_HOMING;
+				ELSE
+					State := STATE_IDLE;
+				END_IF;
+			ELSIF Enable AND HomeRequest THEN
+				State := STATE_HOMING;
+			END_IF;
+		
+		// ------------------------------------------------------
+		// State 5 - HOMING, 35s delay
+		// ------------------------------------------------------
+		ELSIF State = STATE_HOMING THEN	
+			StepCounter := StepCounter + 1;
+		
+			IF StepCounter >= 350 THEN
+				StepCounter := 0;
+				
+				IF Homed THEN
+					State := STATE_IDLE;
+				ELSE
+					Error := TRUE;
+					State := STATE_ERROR;
+				END_IF;
+			END_IF;
+		
+		// ------------------------------------------------------
+		// State 10 - IDLE
+		// ------------------------------------------------------
+		ELSIF State = STATE_IDLE THEN
+			StepCounter := 0;
+		
+			IF NOT Enable THEN
+				State := STATE_INIT;
+			ELSIF HomeRequest THEN
+				State := STATE_HOMING;
+			ELSIF Start AND Homed THEN
+				State := STATE_STARTING;
+			END_IF;
+		
+		// ------------------------------------------------------
+		// State 20 - STARTING, 5s delay
+		// ------------------------------------------------------
+		ELSIF State = STATE_STARTING THEN
+			StepCounter := StepCounter + 1;
+		
+			IF StepCounter >= 50 THEN
+				StepCounter := 0;
+				State := STATE_RUNNING;
+			END_IF;
+		
+		// ------------------------------------------------------
+		// State 30 - RUNNING
+		// ------------------------------------------------------		
+		ELSIF State = STATE_RUNNING THEN
+			StepCounter := 0;
+		
+			IF Stop THEN
+				State := STATE_STOPPING;
+			END_IF;
+		
+		// ------------------------------------------------------
+		// State 40 - STOPPING, 5s delay
+		// ------------------------------------------------------
+		ELSIF State = STATE_STOPPING THEN
+			StepCounter := StepCounter + 1 ;
+			
+			IF StepCounter >= 50 THEN
+				StepCounter := 0;
+				State := STATE_IDLE;
+			END_IF;
+			
+		// ------------------------------------------------------
+		// State 100 - ERROR
+		// ------------------------------------------------------
+		ELSIF State = STATE_ERROR THEN
+			StepCounter := 0;
+		
+			IF Reset THEN
+				Error := FALSE;
+				
+				IF HomeOnReset OR HomeRequest THEN
+					State := STATE_HOMING;
+				ELSE
+					State := STATE_IDLE;
+				END_IF;
+			END_IF;
+		
+		// ------------------------------------------------------
+		// INVALID STATE RECOVERY
+		// ------------------------------------------------------
+		ELSE
+			State := STATE_INIT;
+			Error := TRUE;
+			StepCounter := 0;
+		END_IF;
+		
+		// ------------------------------------------------------
+		// 2. Centralized error transition
+		// ------------------------------------------------------
+		IF Error AND (State <> 100) THEN
+			State := STATE_ERROR;
+			StepCounter := 0;
+		END_IF;
+		
+		// ------------------------------------------------------
+		// Centralized status mapping
+		// ------------------------------------------------------
+		Enabled  := (State = STATE_IDLE) OR (State = STATE_STARTING) OR (State = STATE_RUNNING) OR (State = STATE_STOPPING);
+		Busy     := (State = STATE_HOMING) OR (State = STATE_STARTING) OR (State = STATE_STOPPING);
+		Homing   := (State = STATE_HOMING);
+		Starting := (State = STATE_STARTING);
+		Running  := (State = STATE_RUNNING);
+		Stopping := (State = STATE_STOPPING);
+
+		// ------------------------------------------------------
+		// Error output mapping
+		// ------------------------------------------------------
+		IF State = STATE_ERROR THEN
+			Error := TRUE;
+		END_IF;
+
+		// ------------------------------------------------------
+		// Output mapping
+		// ------------------------------------------------------
+		StateOut := State;
+		DelayCounter := StepCounter;
+
+	END_METHOD
+END_FUNCTION_BLOCK

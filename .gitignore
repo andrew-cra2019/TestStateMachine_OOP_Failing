@@ -1,0 +1,10 @@
+Temp/
+Binaries/
+Diagnosis/
+*.isopen
+*.bak
+*.tmp
+.vs/
+.idea/
+Debug/
+Release/

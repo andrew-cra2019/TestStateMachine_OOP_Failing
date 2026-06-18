@@ -1,0 +1,31 @@
+FUNCTION_BLOCK FB_StateMachine
+	VAR_INPUT
+		Enable : BOOL;
+		Start  : BOOL;
+		Stop   : BOOL;
+		Reset  : BOOL;
+		Homed  : BOOL;
+		HomeOnReset : BOOL;
+		HomeRequest : BOOL;
+	END_VAR
+
+	VAR_OUTPUT
+		Enabled  : BOOL;
+		Busy     : BOOL;
+		Running  : BOOL;
+		Error    : BOOL;
+		Homing   : BOOL;
+		Starting : BOOL;
+		Stopping : BOOL;
+		StateOut : E_MachineState;
+		DelayCounter : DINT;
+	END_VAR
+
+	VAR
+		State : E_MachineState;
+		StepCounter : DINT;
+	END_VAR
+
+	METHOD PUBLIC Execute
+	END_METHOD
+END_FUNCTION_BLOCK

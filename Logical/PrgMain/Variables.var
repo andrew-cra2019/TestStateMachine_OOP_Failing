@@ -1,0 +1,19 @@
+VAR
+	MachineSM         : FB_StateMachine;
+
+	ModuleA_SM		  : FB_StateMachine;
+	ModuleB_SM  	  : FB_StateMachine;
+	ModuleC_SM        : FB_StateMachine;
+	ModuleD_SM        : FB_StateMachine;
+	ModuleE_SM        : FB_StateMachine;
+	ModuleF_SM        : FB_StateMachine;
+	ModuleG_SM        : FB_StateMachine;
+	
+	PrevMachineRunning	: BOOL;
+	ModuleStartPulse	: BOOL;
+	ModuleStopPulse		: BOOL;
+	
+	AllModulesRunning	: BOOL;
+	AllModulesIdle		: BOOL;
+	AnyModuleError		: BOOL;
+END_VAR
